@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Form, Button, Row, Col } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 import FormContainer from "../components/FormContainer";
+import Loader from "../components/Loader";
 import { useLoginMutation } from "../redux/slices/usersApiSlice";
 import { setCredentials } from "../redux/slices/authSlices";
 
@@ -16,6 +18,7 @@ const LoginScreen = () => {
   const [login, { isLoading, error }] = useLoginMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
+
   useEffect(() => {
     if (userInfo) navigate("/");
   }, [navigate, userInfo]);
@@ -31,7 +34,7 @@ const LoginScreen = () => {
       dispatch(setCredentials({ ...response }));
       navigate("/");
     } catch (err) {
-      console.error(err?.data?.message || err.error);
+      toast.error(err?.data?.message || err.error);
     }
   };
 
@@ -59,6 +62,8 @@ const LoginScreen = () => {
             onChange={(e) => setPassword(e.target.value)}
           ></Form.Control>
         </Form.Group>
+
+        {isLoading && <Loader />}
 
         <Button type="submit" variant="primary" className="mt-3">
           Sign In
